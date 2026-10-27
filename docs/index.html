@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Discover Yourself · 빈칸 학습지</title>
+<style>
+  :root {
+    --ink: #1a2028; --paper: #fbf9f4; --line: #d9d2c4;
+    --accent: #2f6f5e; --accent-soft: #e4efe9;
+    --blank: #fff7e6; --blank-border: #c9a94e;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--paper); color: var(--ink);
+    font-family: "Pretendard","Malgun Gothic",-apple-system,sans-serif; line-height: 1.6; }
+  .wrap { max-width: 820px; margin: 0 auto; padding: 32px 20px 100px; }
+
+  header { border-bottom: 3px double var(--ink); padding-bottom: 16px; margin-bottom: 20px; }
+  .eyebrow { font-size: 12px; letter-spacing: 3px; text-transform: uppercase;
+    color: var(--accent); font-weight: 700; margin-bottom: 6px; }
+  h1 { font-size: 23px; margin: 0; font-weight: 800; letter-spacing: -0.3px; }
+  .sub { font-size: 14px; color: #6b6456; margin-top: 6px; }
+
+  .idbar { display: flex; gap: 12px; flex-wrap: wrap; background: #fff;
+    border: 1px solid var(--line); border-radius: 10px; padding: 16px; margin-bottom: 14px;
+    position: sticky; top: 0; z-index: 5; }
+  .field { flex: 1; min-width: 130px; }
+  .field label { display: block; font-size: 12px; font-weight: 700; color: #6b6456; margin-bottom: 5px; }
+  .field input { width: 100%; padding: 10px 12px; font-size: 15px;
+    border: 1px solid var(--line); border-radius: 7px; background: var(--paper); }
+  .field input:focus { outline: 2px solid var(--accent); border-color: transparent; }
+
+  .loadrow { margin: 0 0 24px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+  button.btn-load { background: #fff; color: var(--accent); border: 1px solid var(--accent);
+    padding: 11px 18px; font-size: 14px; font-weight: 700; border-radius: 8px; cursor: pointer; }
+  button.btn-load:hover { background: var(--accent-soft); }
+  button.btn-load:disabled { opacity: .5; cursor: wait; }
+  .loadhint { font-size: 13px; color: #8a8272; }
+
+  .instr-box { background: var(--accent-soft); border-radius: 8px; padding: 12px 16px;
+    font-size: 14px; color: #2a5347; margin-bottom: 24px; line-height: 1.7; }
+
+  .section-head { font-size: 17px; font-weight: 800; color: var(--accent);
+    margin: 30px 0 14px; padding-bottom: 6px; border-bottom: 2px solid var(--accent-soft); }
+
+  .sent { display: grid; grid-template-columns: 34px 1fr; gap: 6px 10px;
+    padding: 14px 0; border-bottom: 1px solid #eee6d6; }
+  .sent-num { grid-row: 1 / 3; font-size: 13px; font-weight: 700; color: var(--blank-border);
+    padding-top: 2px; }
+  .sent-eng { font-size: 15px; color: #3a4048; line-height: 1.55; }
+  .sent-kor { font-size: 15.5px; color: var(--ink); line-height: 2.1; font-weight: 500; }
+
+  input.blank { display: inline-block; width: 140px; min-width: 80px; max-width: 100%;
+    text-align: left; font-size: 15px; font-family: inherit; vertical-align: middle;
+    padding: 2px 8px; margin: 0 2px; background: var(--blank); border: none;
+    border-bottom: 2px solid var(--blank-border); border-radius: 3px 3px 0 0; color: var(--ink); }
+  input.blank:focus { outline: none; background: #fff2cf; border-bottom-color: var(--accent); }
+  input.blank.done { background: var(--accent-soft); border-bottom-color: var(--accent); }
+
+  .barwrap { position: sticky; bottom: 0; background: var(--paper);
+    border-top: 1px solid var(--line); padding: 14px 0 6px; margin-top: 10px; z-index: 5; }
+  .progress { font-size: 13px; color: #6b6456; font-weight: 600; margin-bottom: 10px; }
+  .actions { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+  button.submit { background: var(--accent); color: #fff; border: none; padding: 13px 30px;
+    font-size: 15px; font-weight: 700; border-radius: 8px; cursor: pointer; }
+  button.submit:hover { background: #255848; }
+  button.submit:disabled { background: #a9b8b1; cursor: not-allowed; }
+  .msg { font-size: 14px; font-weight: 600; }
+  .msg.ok { color: var(--accent); }
+  .msg.warn { color: #b5482f; }
+
+  .teacher { margin-top: 40px; border-radius: 12px; background: #232a33; color: #f4f1ea; padding: 20px 22px; }
+  .teacher summary { cursor: pointer; font-size: 14px; font-weight: 700; color: #f4f1ea; list-style: none; user-select: none; }
+  .teacher summary::-webkit-details-marker { display: none; }
+  .teacher summary::before { content: "\25B8 "; }
+  .teacher[open] summary::before { content: "\25BE "; }
+  .pinbox { margin-top: 16px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .pinbox input { padding: 9px 12px; font-size: 15px; width: 140px;
+    border: 1px solid #4a545f; border-radius: 7px; background: #1a2028; color: #f4f1ea; }
+  .pinbox button { background: #f4f1ea; color: #232a33; border: none; padding: 10px 18px;
+    font-size: 14px; font-weight: 700; border-radius: 7px; cursor: pointer; }
+  .pinerr { font-size: 13px; color: #ff9b85; font-weight: 600; }
+  .roster { margin-top: 18px; overflow-x: auto; }
+  .roster-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; }
+  .count { font-size: 13px; color: #7fd1b9; font-weight: 700; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { text-align: left; padding: 8px 9px; border-bottom: 1px solid #3a434e; vertical-align: top; }
+  th { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #a7b0ba; }
+  td { color: #f4f1ea; }
+  .empty { color: #a7b0ba; font-size: 14px; padding: 14px 0; }
+  .trow-answers { font-size: 12px; color: #d5e3dc; line-height: 1.8; white-space: pre-wrap; word-break: break-word; min-width: 280px; }
+  .miss { color: #ff9b85; font-weight: 700; }
+  .btn-mini { background: #323b45; border: 1px solid #4a545f; border-radius: 6px;
+    padding: 6px 12px; font-size: 12px; cursor: pointer; color: #f4f1ea; }
+  .btn-mini:hover { background: #3d4753; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">English · 본문 빈칸 학습지</div>
+    <h1>Discover Yourself &mdash; 진로 설계 본문</h1>
+    <div class="sub">영어 원문을 읽고, 한국어 해석의 빈칸을 우리말로 채우세요. 아는 만큼만 채워도 제출할 수 있어요.</div>
+  </header>
+
+  <div class="idbar">
+    <div class="field">
+      <label for="sid">학번</label>
+      <input id="sid" type="text" placeholder="예: 10125" autocomplete="off">
+    </div>
+    <div class="field">
+      <label for="sname">이름</label>
+      <input id="sname" type="text" placeholder="예: 김민준" autocomplete="off">
+    </div>
+  </div>
+
+  <div class="loadrow">
+    <button class="btn-load" id="loadBtn">이전 답 불러오기</button>
+    <span class="loadhint">지난 시간에 제출했다면, 학번을 입력하고 눌러 이어서 하세요.</span>
+  </div>
+
+  <div class="instr-box">
+    각 문장의 영어 원문 아래, 한국어 해석에 빈칸(노란 칸)이 있습니다. 원문과 앞뒤 흐름을 참고해 알맞은 우리말을 채워 넣으세요.
+  </div>
+
+    <div class="sent">
+      <div class="sent-num">1</div>
+      <div class="sent-eng">“What do you want to do in the future?”</div>
+      <div class="sent-kor">“당신은 앞으로 무엇을 하고 싶나요?”</div>
+    </div>
+    <div class="sent">
+      <div class="sent-num">2</div>
+      <div class="sent-eng">Parents and teachers ask students this question all the time.</div>
+      <div class="sent-kor">학부모와 교사는 학생들에게 항상 이 질문을 던집니다.</div>
+    </div>
+    <div class="sent">
+      <div class="sent-num">3</div>
+      <div class="sent-eng">But how many students actually know what they want to do in the future?</div>
+      <div class="sent-kor">하지만 실제로 그들이 미래에 <input class="blank" data-n="1" placeholder="우리말 입력"> 아는 학생은 얼마나 될까요?</div>
+    </div>
+    <div class="sent">
+      <div class="sent-num">4</div>
+      <div class="sent-eng">Many students are either unsure of what they know or confused about how to find the right career.</div>
+      <div class="sent-kor">많은 학생들이 자신이 무엇을 알고 있는지 확신하지 못하거나, <input class="blank" data-n="2" placeholder="우리말 입력">에 대해 혼란스러워합니다.</div>
+    </div>
+    <div class="sent">
+      <div class="sent-num">5</div>
+      <div class="sent-eng">The following may help students discover a new way to look at themselves and design a path for their future.</div>
+      <div class="sent-kor">다음 내용은 학생들이 자신을 바라보는 새로운 방식을 발견하고 <input class="blank" data-n="3" placeholder="우리말 입력"> 도움이 될 수 있습니다.</div>
+    </div>
+    <div class="section-head">Discover Yourself</div>
+    <div class="sent">
+      <div class="sent-num">6</div>
+      <div class="sent-eng">It’s hard to climb a mountain without preparation, and designing a career path requires preparation too.</div>
+      <div class="sent-kor">준비 없이 산에 오르는 것은 어렵고, 직업 경로를 설계하는 것도 역시 <input class="blank" data-n="4" placeholder="우리말 입력">.</div>
+    </div>
+    <div class="sent">
+      <div class="sent-num">7</div>
+      <div class="sent-eng">Begin your career map by taking a blank piece of paper and drawing some dots on it.</div>
+      <div class="sent-kor">빈 종이에 <input class="blank" data-n="5" placeholder="우리말 입력">으로써 직업 지도를 시작해 보세요.</div>
+    </div>
+    <div class="sent">
+      <div class="sent-num">8</div>
+      <div class="sent-eng">These dots will be a representation of who you are at this moment in time, so make as many dots as you can.</div>
+      <div class="sent-kor">이 점들은 지금 이 순간의 당신을 나타내는 것일 겁니다, 그래서 <input class="blank" data-n="6" placeholder="우리말 입력">.</div>
+    </div>
+    <div class="sent">
+      <div class="sent-num">9</div>
+      <div class="sent-eng">Write one or two words to describe one aspect of yourself next to each dot.</div>
+      <div class="sent-kor">각 점 옆에 <input class="blank" data-n="7" placeholder="우리말 입력"> 한두 개의 단어를 적으세요.</div>
+    </div>
+    <div class="sent">
+      <div class="sent-num">10</div>
+      <div class="sent-eng">Awards, certifications, and courses taken at school are great places to start.</div>
+      <div class="sent-kor">학교에서 받은 상, <input class="blank" data-n="8" placeholder="우리말 입력">, 수업은 좋은 시작점입니다.</div>
+    </div>
+    <div class="sent">
+      <div class="sent-num">11</div>
+      <div class="sent-eng">You can also think about your past and present achievements, interests, and strengths.</div>
+      <div class="sent-kor">또한 당신은 과거와 현재의 <input class="blank" data-n="9" placeholder="우리말 입력">에 대해서도 생각해 볼 수 있습니다.</div>
+    </div>
+    <div class="sent">
+      <div class="sent-num">12</div>
+      <div class="sent-eng">Parents, teachers, friends, and others you trust can also provide insight into you that you may not have noticed.</div>
+      <div class="sent-kor">부모님, 선생님, 친구, 그리고 당신이 신뢰하는 다른 사람들도 <input class="blank" data-n="10" placeholder="우리말 입력"> 당신에 대한 통찰력을 제공할 수 있습니다.</div>
+    </div>
+    <div class="sent">
+      <div class="sent-num">13</div>
+      <div class="sent-eng">If you think it describes you, write it down as a new dot.</div>
+      <div class="sent-kor">만약 당신이 그것이 당신을 설명한다고 생각되면 <input class="blank" data-n="11" placeholder="우리말 입력">.</div>
+    </div>
+    <div class="sent">
+      <div class="sent-num">14</div>
+      <div class="sent-eng">Hopefully doing this exercise will show you that there’s more to being you than you may have thought.</div>
+      <div class="sent-kor">이런 연습을 하는 것은 <input class="blank" data-n="12" placeholder="우리말 입력"> 훨씬 더 많은 것이 있다는 것을 알게 되기를 바랍니다.</div>
+    </div>
+    <div class="section-head">Examine Your Resources</div>
+    <div class="sent">
+      <div class="sent-num">15</div>
+      <div class="sent-eng">Now, take a step back and look at your dots.</div>
+      <div class="sent-kor">이제 <input class="blank" data-n="13" placeholder="우리말 입력"> 점들을 살펴보세요.</div>
+    </div>
+    <div class="sent">
+      <div class="sent-num">16</div>
+      <div class="sent-eng">A good idea at this stage is to start categorizing your dots. Do you see any patterns emerging?</div>
+      <div class="sent-kor">이 단계에서는 좋은 생각은 <input class="blank" data-n="14" placeholder="우리말 입력">. 당신은 어떤 패턴이 나타나는지 보시나요?</div>
+    </div>
+    <div class="sent">
+      <div class="sent-num">17</div>
+      <div class="sent-eng">For example, you might have several dots that highlight scientific skills or maybe some dots that point to creativity.</div>
+      <div class="sent-kor">예를 들어, 당신은 과학적 기술을 강조하는 점이 여러 개 있을 수도 있고, <input class="blank" data-n="15" placeholder="우리말 입력">.</div>
+    </div>
+    <div class="sent">
+      <div class="sent-num">18</div>
+      <div class="sent-eng">These patterns may point to something that is meaningful to you.</div>
+      <div class="sent-kor">이러한 패턴은 당신에게 의미 있는 무언가를 <input class="blank" data-n="16" placeholder="우리말 입력">.</div>
+    </div>
+    <div class="sent">
+      <div class="sent-num">19</div>
+      <div class="sent-eng">Another perspective is to look at what is missing from your map, which you can call “gaps.”</div>
+      <div class="sent-kor">또 다른 관점은 <input class="blank" data-n="17" placeholder="우리말 입력">, 즉 당신은 &quot;갭&quot; 이라고 부를 수 있는 부분을 살펴보는 것입니다.</div>
+    </div>
+    <div class="sent">
+      <div class="sent-num">20</div>
+      <div class="sent-eng">For example, you may feel that you need some work on mathematics or a foreign language.</div>
+      <div class="sent-kor">예를 들어, 당신은 <input class="blank" data-n="18" placeholder="우리말 입력">에 대한 공부가 필요하다고 느낄 수도 있습니다.</div>
+    </div>
+    <div class="sent">
+      <div class="sent-num">21</div>
+      <div class="sent-eng">At such a young age, you probably don’t have certain skills: your technical knowledge might be at a beginner level, or your physical conditioning might need work.</div>
+      <div class="sent-kor">그렇게 어린 나이에, 특정한 기술을 갖추지 못했을 수도 있습니다. 즉 당신의 기술적 지식이 <input class="blank" data-n="19" placeholder="우리말 입력">, 당신의 신체 단련에 개선이 필요할 수도 있습니다.</div>
+    </div>
+    <div class="sent">
+      <div class="sent-num">22</div>
+      <div class="sent-eng">Noticing these gaps will help you in the next steps of your map.</div>
+      <div class="sent-kor"><input class="blank" data-n="20" placeholder="우리말 입력"> 당신 지도의 다음 단계를 진행하는 데 도움이 됩니다.</div>
+    </div>
+    <div class="section-head">Set Up Goals</div>
+    <div class="sent">
+      <div class="sent-num">23</div>
+      <div class="sent-eng">By comparing your strengths and weaknesses, or the dots and the gaps, your map should show you what you possess and what you need to work on.</div>
+      <div class="sent-kor">당신의 강점과 약점, 즉 점과 격차를 비교함으로써, 당신의 지도는 <input class="blank" data-n="21" placeholder="우리말 입력">.</div>
+    </div>
+    <div class="sent">
+      <div class="sent-num">24</div>
+      <div class="sent-eng">Now, think of a long-term goal, like becoming a musician.</div>
+      <div class="sent-kor">이제 음악가가 되는 것과 같은 <input class="blank" data-n="22" placeholder="우리말 입력">를 생각해 보세요.</div>
+    </div>
+    <div class="sent">
+      <div class="sent-num">25</div>
+      <div class="sent-eng">Your goal doesn’t have to be realistic; remember that the purpose of having the goal clearly written is to map out a way to get there.</div>
+      <div class="sent-kor">당신의 목표가 현실적일 필요는 없습니다. <input class="blank" data-n="23" placeholder="우리말 입력">은 그 목표에 도달하는 방법을 계획하는 것이라는 점을 기억하세요.</div>
+    </div>
+    <div class="sent">
+      <div class="sent-num">26</div>
+      <div class="sent-eng">Understanding where you want to go is an important step, so the next step is laying out a plan to push on to that goal.</div>
+      <div class="sent-kor">당신이 어디로 가고 싶은지 이해하는 것은 중요한 단계입니다, 그래서 다음 단계는 <input class="blank" data-n="24" placeholder="우리말 입력">.</div>
+    </div>
+    <div class="section-head">Fill in the Gaps</div>
+    <div class="sent">
+      <div class="sent-num">27</div>
+      <div class="sent-eng">To reach your goal of becoming a musician, you need to fill the gaps between the dots to create a path toward your goal.</div>
+      <div class="sent-kor">음악가가 되겠다는 목표를 달성하기 위해, 당신은 목표를 향한 길을 만들기 위해 점과 점 사이의 <input class="blank" data-n="25" placeholder="우리말 입력">.</div>
+    </div>
+    <div class="sent">
+      <div class="sent-num">28</div>
+      <div class="sent-eng">Do you need to work on voice techniques or set up a personal website to promote yourself first?</div>
+      <div class="sent-kor">먼저 당신은 음성 기술을 연마하거나, <input class="blank" data-n="26" placeholder="우리말 입력">개인 웹사이트를 만들어야 합니까?</div>
+    </div>
+    <div class="sent">
+      <div class="sent-num">29</div>
+      <div class="sent-eng">You can plan other paths by researching what essential skills, training or education, or type of personality you may need to achieve a particular goal.</div>
+      <div class="sent-kor">당신은 특정 목표를 달성하는 데 필요할지 모르는 필수 기술, 훈련이나 교육, 성격 유형이 무엇인지 조사함으로써 <input class="blank" data-n="27" placeholder="우리말 입력">.</div>
+    </div>
+    <div class="sent">
+      <div class="sent-num">30</div>
+      <div class="sent-eng">Talking to or shadowing people considered to be successful is a great way to learn about a specific profession too.</div>
+      <div class="sent-kor"><input class="blank" data-n="28" placeholder="우리말 입력">도 역시 특정 직업에 대해 배우는 좋은 방법입니다.</div>
+    </div>
+    <div class="sent">
+      <div class="sent-num">31</div>
+      <div class="sent-eng">As you fill in each gap with a new dot, you can decide what to do next.</div>
+      <div class="sent-kor"><input class="blank" data-n="29" placeholder="우리말 입력"> , 다음에 무엇을 할지 결정할 수 있습니다.</div>
+    </div>
+    <div class="sent">
+      <div class="sent-num">32</div>
+      <div class="sent-eng">Each path is unique and has different challenges.</div>
+      <div class="sent-kor"><input class="blank" data-n="30" placeholder="우리말 입력"> 각기 다른 어려움을 안고 있습니다.</div>
+    </div>
+    <div class="section-head">Take the Next Steps</div>
+    <div class="sent">
+      <div class="sent-num">33</div>
+      <div class="sent-eng">Now, instead of aimlessly trying random things, you can look at your map to see what to do next. Just look for a gap to fill.</div>
+      <div class="sent-kor"><input class="blank" data-n="31" placeholder="우리말 입력"> , 당신은 다음에 무엇을 해야 할지 보기 위해 당신의 지도를 볼 수 있습니다.</div>
+    </div>
+    <div class="sent">
+      <div class="sent-num">34</div>
+      <div class="sent-eng">Deciding which gap to fill is up to you, but your dot map should show you that whatever you choose, you will be moving toward your goal.</div>
+      <div class="sent-kor">채울 빈틈을 찾으세요. <input class="blank" data-n="32" placeholder="우리말 입력">, 당신의 점 지도는 당신이 무엇을 선택하든 당신이 당신의 목표를 향해 나아갈 수 있음을 보여줘야 합니다.</div>
+    </div>
+    <div class="sent">
+      <div class="sent-num">35</div>
+      <div class="sent-eng">There is no need to rush anything though.</div>
+      <div class="sent-kor">하지만 서두를 필요는 없습니다.</div>
+    </div>
+    <div class="sent">
+      <div class="sent-num">36</div>
+      <div class="sent-eng">Take your time filling the gaps. Since you’ve designed your own map, each gap you fill and dot you make “levels you up.”</div>
+      <div class="sent-kor">빈칸을 채우는데 시간을 들이세요. <input class="blank" data-n="33" placeholder="우리말 입력">, 당신이 채우는 빈칸과 당신이 만든 점 하나하나가 당신을 레벨업시킵니다.</div>
+    </div>
+    <div class="sent">
+      <div class="sent-num">37</div>
+      <div class="sent-eng">If you’ve made it this far, you probably realize some dots will take time to complete, and other dots will take great effort.</div>
+      <div class="sent-kor">만약 당신이 여기까지 해냈다면, 당신은 어떤 점은 완성하는 데 <input class="blank" data-n="34" placeholder="우리말 입력">, 어떤 점은 <input class="blank" data-n="35" placeholder="우리말 입력"> 깨달을 겁니다.</div>
+    </div>
+    <div class="sent">
+      <div class="sent-num">38</div>
+      <div class="sent-eng">No one knows what kind of person you will be five or ten years down the road, so each investment you make in yourself now will grow into expertise and experience in the future.</div>
+      <div class="sent-kor">어떤 사람도 5년이나 10년 뒤에 <input class="blank" data-n="36" placeholder="우리말 입력">. 따라서 지금 당신 자신에게 하는 각각의 투자는 미래에 전문성과 경험으로 성장할 것입니다.</div>
+    </div>
+    <div class="sent">
+      <div class="sent-num">39</div>
+      <div class="sent-eng">The dots are a way to see yourself in the present and then imagine yourself in as many futures as you can.</div>
+      <div class="sent-kor">그 점들은 현재의 당신 자신을 보고 <input class="blank" data-n="37" placeholder="우리말 입력">.</div>
+    </div>
+    <div class="sent">
+      <div class="sent-num">40</div>
+      <div class="sent-eng">It’s up to you to start connecting your dots now.</div>
+      <div class="sent-kor">이제 당신의 점들을 연결하기 시작하는 것은 당신에게 <input class="blank" data-n="38" placeholder="우리말 입력">.</div>
+    </div>
+
+  <div class="barwrap">
+    <div class="progress" id="progress">0 / 38 칸 입력됨</div>
+    <div class="actions">
+      <button class="submit" id="submitBtn">제출하기</button>
+      <span class="msg" id="msg"></span>
+    </div>
+  </div>
+
+  <details class="teacher" id="teacherBox">
+    <summary>교사 확인</summary>
+    <div id="pinGate">
+      <div class="pinbox">
+        <input id="pinInput" type="password" inputmode="numeric" placeholder="교사 PIN" autocomplete="off">
+        <button id="pinBtn">확인</button>
+        <span class="pinerr" id="pinErr"></span>
+      </div>
+    </div>
+    <div class="roster" id="rosterWrap" style="display:none;">
+      <div class="roster-head">
+        <span class="count" id="count"></span>
+        <button class="btn-mini" id="refreshBtn">새로고침</button>
+        <button class="btn-mini" id="csvBtn">CSV 내려받기</button>
+        <button class="btn-mini" id="lockBtn">잠그기</button>
+      </div>
+      <div id="rosterBody"></div>
+    </div>
+  </details>
+</div>
+
+<script>
+  // ══════════ 설정 ══════════
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxM5_fGSGDI5AbkYAzu-x232Z4LTaSHEvgv3h549RNxRxLCHS3dC2fyvBkMbTPaeKYM/exec";   // Apps Script 배포 후 받은 /exec 주소
+  // 교사 PIN은 이 파일이 아니라 Apps Script(Code.gs)의 TEACHER_PIN에서 정합니다
+  // ═════════════════════════
+  const SCRIPT_READY = /^https:\/\/script\.google\.com\/.+\/exec$/.test(SCRIPT_URL);
+  let teacherPin = "";
+
+  const TOTAL_BLANKS = document.querySelectorAll("input.blank").length;
+  const memoryStore = {};
+
+  const sidEl = document.getElementById("sid");
+  const snameEl = document.getElementById("sname");
+  const msgEl = document.getElementById("msg");
+  const submitBtn = document.getElementById("submitBtn");
+  const loadBtn = document.getElementById("loadBtn");
+  const progressEl = document.getElementById("progress");
+
+  function getBlanks() {
+    return [...document.querySelectorAll("input.blank")].map(el => ({ n: el.dataset.n, v: el.value.trim() }));
+  }
+  function updateProgress() {
+    const filled = getBlanks().filter(b => b.v).length;
+    progressEl.textContent = filled + " / " + TOTAL_BLANKS + " 칸 입력됨";
+    document.querySelectorAll("input.blank").forEach(el => el.classList.toggle("done", el.value.trim().length > 0));
+  }
+  document.querySelectorAll("input.blank").forEach(el => {
+    el.addEventListener("input", updateProgress);
+  });
+
+  let jsonpSeq = 0;
+  function jsonp(params, timeoutMs) {
+    return new Promise((resolve, reject) => {
+      const cb = "__cb" + (++jsonpSeq) + "_" + Date.now();
+      const url = SCRIPT_URL + "?" + new URLSearchParams(Object.assign({}, params, { callback: cb })).toString();
+      const script = document.createElement("script");
+      let done = false;
+      const timer = setTimeout(() => { if (done) return; done = true; cleanup(); reject(new Error("timeout")); }, timeoutMs || 15000);
+      function cleanup() { clearTimeout(timer); delete window[cb]; if (script.parentNode) script.parentNode.removeChild(script); }
+      window[cb] = (data) => { if (done) return; done = true; cleanup(); resolve(data); };
+      script.onerror = () => { if (done) return; done = true; cleanup(); reject(new Error("neterr")); };
+      script.src = url;
+      document.head.appendChild(script);
+    });
+  }
+  async function apiSave(record) {
+    // 저장 실패 시 자동 재시도 (한 반 동시 제출 대비): 최대 3회, 간격을 늘려가며
+    const params = { action: "save", sid: record.sid, sname: record.sname, at: record.at, answers: JSON.stringify(record.answers) };
+    let lastErr = null;
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      try {
+        const res = await jsonp(params);
+        if (res && res.ok) return res;
+        lastErr = new Error((res && res.error) || "fail");
+      } catch (e) {
+        lastErr = e;
+      }
+      if (attempt < 3) await new Promise(r => setTimeout(r, attempt * 1500));
+    }
+    throw lastErr;
+  }
+  async function apiGet(params) { return await jsonp(params); }
+
+  async function submit() {
+    const sid = sidEl.value.trim();
+    const sname = snameEl.value.trim();
+    if (!sid || !sname) { msgEl.textContent = "학번과 이름을 먼저 입력하세요."; msgEl.className = "msg warn"; return; }
+    if (!SCRIPT_READY) { msgEl.textContent = "아직 구글시트가 연결되지 않았어요. 선생님께 알려 주세요."; msgEl.className = "msg warn"; return; }
+    const blanks = getBlanks();
+    const filled = blanks.filter(b => b.v).length;
+    const record = { sid, sname, answers: blanks.map(b => b.v), filled, total: TOTAL_BLANKS, at: new Date().toLocaleString("ko-KR") };
+    submitBtn.disabled = true;
+    msgEl.textContent = "제출 중..."; msgEl.className = "msg";
+    try {
+      const res = await apiSave(record);
+      if (!res || !res.ok) throw new Error((res && res.error) || "fail");
+      memoryStore[sid] = record;
+      msgEl.textContent = "제출 완료! (" + filled + "/" + TOTAL_BLANKS + "칸 입력)"; msgEl.className = "msg ok";
+    } catch (e) {
+      memoryStore[sid] = record;
+      msgEl.textContent = "제출하지 못했어요. 쓴 답은 그대로 있으니 잠시 뒤 다시 눌러 주세요."; msgEl.className = "msg warn";
+    }
+    submitBtn.disabled = false;
+  }
+
+  async function loadPrevious() {
+    const sid = sidEl.value.trim();
+    if (!sid) { msgEl.textContent = "먼저 학번을 입력하세요."; msgEl.className = "msg warn"; return; }
+    if (!SCRIPT_READY) { msgEl.textContent = "아직 구글시트가 연결되지 않았어요. 선생님께 알려 주세요."; msgEl.className = "msg warn"; return; }
+    loadBtn.disabled = true;
+    msgEl.textContent = "불러오는 중..."; msgEl.className = "msg";
+    let rec = null;
+    try { const data = await apiGet({ action: "load", sid }); if (data && data.ok && data.record) rec = data.record; }
+    catch (e) { rec = memoryStore[sid] || null; }
+    if (!rec) rec = memoryStore[sid] || null;
+    loadBtn.disabled = false;
+    if (!rec) { msgEl.textContent = "이전 제출 기록이 없습니다. 새로 시작하세요."; msgEl.className = "msg warn"; return; }
+    if (rec.sname && !snameEl.value.trim()) snameEl.value = rec.sname;
+    const inputs = [...document.querySelectorAll("input.blank")];
+    (rec.answers || []).forEach((a, i) => { if (inputs[i]) inputs[i].value = a || ""; });
+    updateProgress();
+    const f = (rec.answers || []).filter(Boolean).length;
+    msgEl.textContent = "이전 답을 불러왔어요 (" + f + "/" + TOTAL_BLANKS + "칸). 이어서 채우세요."; msgEl.className = "msg ok";
+  }
+
+  // PIN이 틀리면 "pin", 연결이 안 되면 "net" 오류를 던진다
+  async function fetchRecords(pin) {
+    if (!SCRIPT_READY) throw new Error("setup");
+    let data;
+    try { data = await apiGet({ action: "list", pin: pin || teacherPin }); }
+    catch (e) { throw new Error("net"); }
+    if (!data || !data.ok) throw new Error((data && data.error) || "net");
+    let records = Array.isArray(data.records) ? data.records : [];
+    records = records.map(r => { const answers = r.answers || []; const filled = answers.filter(x => String(x).trim()).length; return Object.assign({}, r, { filled, total: TOTAL_BLANKS }); });
+    records.sort((a, b) => (a.sid > b.sid ? 1 : -1));
+    return records;
+  }
+
+  async function loadRoster() {
+    const body = document.getElementById("rosterBody");
+    const countEl = document.getElementById("count");
+    body.innerHTML = '<div class="empty">불러오는 중...</div>';
+    let records;
+    try { records = await fetchRecords(); }
+    catch (e) { countEl.textContent = ""; body.innerHTML = '<div class="empty">명단을 불러오지 못했어요. 잠시 뒤 새로고침을 눌러 주세요.</div>'; return; }
+    countEl.textContent = "제출 " + records.length + "명";
+    if (records.length === 0) { body.innerHTML = '<div class="empty">아직 제출한 학생이 없습니다.</div>'; return; }
+    let html = '<table><thead><tr><th>학번</th><th>이름</th><th>완성도</th><th>제출 시각</th><th>입력 답</th></tr></thead><tbody>';
+    for (const r of records) {
+      const f = r.filled, t = r.total || TOTAL_BLANKS, complete = f >= t;
+      html += '<tr><td>' + esc(r.sid) + '</td><td>' + esc(r.sname) + '</td>' +
+        '<td class="' + (complete ? '' : 'miss') + '">' + f + '/' + t + '</td><td>' + esc(r.at || "") + '</td>' +
+        '<td class="trow-answers">' + (r.answers || []).map((a,i) => (i+1) + "." + esc(a||"—")).join("  ") + '</td></tr>';
+    }
+    html += '</tbody></table>';
+    body.innerHTML = html;
+  }
+
+  async function downloadCSV() {
+    let records;
+    try { records = await fetchRecords(); }
+    catch (e) { alert("명단을 불러오지 못했어요. 잠시 뒤 다시 눌러 주세요."); return; }
+    if (records.length === 0) { alert("제출 기록이 없습니다."); return; }
+    const header = ["학번","이름","완성도","제출시각"];
+    for (let i = 1; i <= TOTAL_BLANKS; i++) header.push("빈칸"+i);
+    const rows = [header];
+    for (const r of records) {
+      const row = [r.sid, r.sname, r.filled + "/" + (r.total||TOTAL_BLANKS), r.at || ""];
+      for (let i = 0; i < TOTAL_BLANKS; i++) row.push((r.answers && r.answers[i]) || "");
+      rows.push(row);
+    }
+    const csv = rows.map(r => r.map(c => '"' + String(c).replace(/"/g,'""') + '"').join(",")).join("\n");
+    const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a"); a.href = url; a.download = "제출명단.csv"; a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+
+  const pinGate = document.getElementById("pinGate");
+  const rosterWrap = document.getElementById("rosterWrap");
+  const pinInput = document.getElementById("pinInput");
+  const pinErr = document.getElementById("pinErr");
+  // PIN은 서버(Code.gs)가 확인한다
+  async function unlock(){
+    const pin = pinInput.value.trim();
+    if (!pin) return;
+    pinErr.textContent = "확인 중...";
+    try { await fetchRecords(pin); }
+    catch (e) {
+      pinErr.textContent = e.message === "pin" ? "PIN이 올바르지 않습니다."
+        : e.message === "setup" ? "아직 구글시트가 연결되지 않았어요."
+        : "연결이 안 됩니다. 잠시 뒤 다시 시도하세요.";
+      return;
+    }
+    teacherPin = pin;
+    pinGate.style.display="none"; rosterWrap.style.display="block"; pinErr.textContent=""; pinInput.value=""; loadRoster();
+  }
+  function lock(){ teacherPin = ""; rosterWrap.style.display="none"; pinGate.style.display="block"; }
+  document.getElementById("pinBtn").addEventListener("click", unlock);
+  pinInput.addEventListener("keydown", e => { if(e.key==="Enter") unlock(); });
+  document.getElementById("lockBtn").addEventListener("click", lock);
+  document.getElementById("refreshBtn").addEventListener("click", loadRoster);
+  document.getElementById("csvBtn").addEventListener("click", downloadCSV);
+  submitBtn.addEventListener("click", submit);
+  loadBtn.addEventListener("click", loadPrevious);
+  updateProgress();
+</script>
+</body>
+</html>

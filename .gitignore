@@ -1,0 +1,6 @@
+.DS_Store
+node_modules/
+*.log
+
+# 교사 자료(한글 파일)는 공개 저장소에 올리지 않음
+*.hwp
