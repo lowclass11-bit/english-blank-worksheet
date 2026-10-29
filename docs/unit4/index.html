@@ -99,22 +99,22 @@ h2 { font-size: 23px; font-weight: 700; margin: 14px 0 4px; line-height: 1.8; }
 .vocab li b { font-weight: 700; margin-right: 8px; }
 
 .pop {
-  position: absolute; z-index: 10; display: none; align-items: flex-start; gap: 20px;
-  width: max-content; max-width: min(340px, calc(100vw - 32px));
-  padding: 18px 16px 18px 24px; border: 1px solid var(--card-border); border-radius: 18px;
-  background: var(--card); box-shadow: 0 6px 24px rgba(60, 40, 120, .12);
+  position: absolute; z-index: 10; display: none; align-items: flex-start; gap: 8px;
+  width: max-content; max-width: min(260px, calc(100vw - 32px));
+  padding: 8px 6px 9px 12px; border: 1px solid var(--card-border); border-radius: 11px;
+  background: var(--card); box-shadow: 0 4px 14px rgba(60, 40, 120, .12);
 }
 .pop.show { display: flex; }
-.pop .body { min-width: 0; padding-top: 2px; }
-.pop .pw { font-size: 22px; font-weight: 700; color: var(--accent); line-height: 1.3; word-break: break-word; }
-.pop .tag { display: inline-block; margin-left: 8px; padding: 1px 7px; font-size: 11px; font-weight: 500; vertical-align: 4px;
-  border-radius: 6px; background: var(--btn); color: var(--accent); }
-.pop .pm { font-size: 19px; margin-top: 8px; line-height: 1.5; }
-.pop .pn { font-size: 14px; margin-top: 8px; line-height: 1.55; color: var(--muted); }
+.pop .body { min-width: 0; padding-top: 1px; }
+.pop .pw { font-size: 16px; font-weight: 700; color: var(--accent); line-height: 1.3; word-break: break-word; }
+.pop .tag { display: inline-block; margin-left: 6px; padding: 0 5px; font-size: 10px; font-weight: 500; vertical-align: 2px;
+  border-radius: 5px; background: var(--btn); color: var(--accent); }
+.pop .pm { font-size: 15px; margin-top: 2px; line-height: 1.45; }
+.pop .pn { font-size: 12px; margin-top: 3px; line-height: 1.45; color: var(--muted); }
 .pop .pn:empty { display: none; }
 .pop button {
-  flex: none; width: 44px; height: 44px; border: 0; border-radius: 12px; background: var(--btn);
-  color: var(--accent); font-size: 22px; line-height: 1; cursor: pointer;
+  flex: none; width: 26px; height: 26px; border: 0; border-radius: 7px; background: var(--btn);
+  color: var(--accent); font-size: 13px; line-height: 1; cursor: pointer;
 }
 
 footer { margin-top: 40px; font-size: 13px; color: var(--muted); text-align: center; }
@@ -1055,7 +1055,7 @@ function place(el) {
   const r = rects[rects.length - 1] || el.getBoundingClientRect();
   const pr = page.getBoundingClientRect();
   const pwid = pop.offsetWidth, phei = pop.offsetHeight;
-  const gap = 8, side = 12;
+  const gap = 4, side = 12;
   let left = r.left - pr.left;
   left = Math.max(side - pr.left, Math.min(left, document.documentElement.clientWidth - pr.left - pwid - side));
   let top = r.bottom - pr.top + gap;
